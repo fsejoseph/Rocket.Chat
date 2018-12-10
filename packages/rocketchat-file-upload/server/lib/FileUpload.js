@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import stream from 'stream';
+import streamBuffers from 'stream-buffers';
 import mime from 'mime-type/with-db';
 import Future from 'fibers/future';
 import sharp from 'sharp';
@@ -258,6 +259,22 @@ Object.assign(FileUpload, {
 		}
 		res.writeHead(404);
 		res.end();
+	},
+
+	getBuffer(file, cb) {
+		const store = this.getStoreByName(file.store);
+
+		if (!store || !store.get) { cb(new Error('Store is invalid'), null); }
+
+		const buffer = new streamBuffers.WritableStreamBuffer({
+			initialSize: file.size,
+		});
+
+		buffer.on('finish', () => {
+			cb(null, buffer.getContents());
+		});
+
+		store.copy(file, buffer);
 	},
 
 	copy(file, targetFile) {
