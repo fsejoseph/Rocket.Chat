@@ -6,11 +6,9 @@ ADD . /app
 
 RUN set -x \
  && cd /app/bundle/programs/server \
- && npm install \
+ && npm install npm@latest -g\
+ && npm i -g updates \
  && npm cache clear --force \
- && npm update base64url@2.2.0 \
- && npm update sshpk@1.15.2 \
- && 
  && chown -R rocketchat:rocketchat /app \
  # Start hack for sharp...
  && rm -rf npm/node_modules/sharp \
